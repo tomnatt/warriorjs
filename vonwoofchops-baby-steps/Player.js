@@ -11,27 +11,32 @@ class Player {
   }
 
   adventure(warrior) {
-    //` If we're taking damage, run away or get fighting
-    if (this.takingDamage(warrior)) {
-      if (this.lowHealth(warrior)) {
-        warrior.walk("backward");
-      } else {
-        this.moveRescueFight(warrior);
-      }
+    // If injured but not taking damage, heal
+    // If wall in front, pivot
+    // If nearest thing is an enemy, shoot
+    // If next to a captive, rescue
+    // Else move forward
 
-    // If not in danger and injured, heal up
-    } else if (this.isInjured(warrior)) {
+    if (this.isInjured(warrior) && !this.takingDamage(warrior)) {
       this.healUp(warrior);
 
-    // If healed and safe move onwards
-    } else {
-      this.moveRescueFight(warrior);
+    } else if (warrior.feel().isWall()) {
+      warrior.pivot();
 
+    } else if (this.enemyNearest(warrior)) {
+      warrior.shoot();
+
+    } else if (warrior.feel().isUnit() && warrior.feel().getUnit().isBound()) {
+      warrior.rescue();
+
+    } else {
+      warrior.walk();
     }
   }
 
-  takingRangedDamage(warrior) {
-    return takingDamage(warrior) && warrior.feel().isEmpty();
+  enemyNearest(warrior) {
+    const spaceWithUnit = warrior.look().find(space => space.isUnit());
+    return spaceWithUnit && spaceWithUnit.getUnit().isEnemy();
   }
 
   takingDamage(warrior) {
@@ -44,24 +49,6 @@ class Player {
 
   isInjured(warrior) {
     return warrior.health() < warrior.maxHealth();
-  }
-
-  moveRescueFight(warrior) {
-    if (warrior.feel().isEmpty()) {
-      warrior.walk();
-    } else {
-      if (warrior.feel().isUnit()) {
-        if (warrior.feel().getUnit().isBound()) {
-          warrior.rescue();
-        } else {
-          warrior.attack();
-        }
-      } else if (warrior.feel().isWall()) {
-        warrior.pivot();
-      } else if (warrior.feel().isStairs()) {
-        warrior.walk();
-      }
-    }
   }
 
   healUp(warrior) {
