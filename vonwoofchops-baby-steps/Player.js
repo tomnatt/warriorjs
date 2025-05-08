@@ -23,6 +23,9 @@ class Player {
     } else if (warrior.feel().isWall()) {
       warrior.pivot();
 
+    } else if (this.enemyBehind(warrior)) {
+      warrior.shoot("backward");
+
     } else if (this.enemyNearest(warrior)) {
       warrior.shoot();
 
@@ -32,6 +35,11 @@ class Player {
     } else {
       warrior.walk();
     }
+  }
+
+  enemyBehind(warrior) {
+    const spaceWithUnit = warrior.look("backward").find(space => space.isUnit());
+    return spaceWithUnit && spaceWithUnit.getUnit().isEnemy();
   }
 
   enemyNearest(warrior) {
