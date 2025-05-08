@@ -14,7 +14,7 @@ class Player {
 
     // If healed and safe move onwards
     } else {
-      this.advanceAttack(warrior);
+      this.adventure(warrior);
 
     }
 
@@ -28,6 +28,18 @@ class Player {
 
   isInjured(warrior) {
     return warrior.health() < warrior.maxHealth();
+  }
+
+  adventure(warrior) {
+    if (warrior.feel().isEmpty()) {
+      warrior.walk();
+    } else {
+      if (warrior.feel().getUnit().isBound()) {
+        warrior.rescue();
+      } else {
+        warrior.attack();
+      }
+    }
   }
 
   advanceAttack(warrior) {
