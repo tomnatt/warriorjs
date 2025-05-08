@@ -1,28 +1,22 @@
 class Player {
   constructor() {
     this.health = 20; // Max health
-    this.behindClear = false;
   }
 
   playTurn(warrior) {
-    // Clear behind first
-    if (!this.behindClear) {
-      this.adventure(warrior, "backward");
-    } else {
-      this.adventure(warrior, "forward");
-    }
+    this.adventure(warrior);
 
     // Store health
     this.health = warrior.health();
   }
 
-  adventure(warrior, direction) {
+  adventure(warrior) {
     //` If we're taking damage, run away or get fighting
     if (this.takingDamage(warrior)) {
       if (this.lowHealth(warrior)) {
         warrior.walk("backward");
       } else {
-        this.moveRescueFight(warrior, direction);
+        this.moveRescueFight(warrior);
       }
 
     // If not in danger and injured, heal up
@@ -31,7 +25,7 @@ class Player {
 
     // If healed and safe move onwards
     } else {
-      this.moveRescueFight(warrior, direction);
+      this.moveRescueFight(warrior);
 
     }
   }
@@ -52,21 +46,20 @@ class Player {
     return warrior.health() < warrior.maxHealth();
   }
 
-  moveRescueFight(warrior, direction) {
-    if (warrior.feel(direction).isEmpty()) {
-      warrior.walk(direction);
+  moveRescueFight(warrior) {
+    if (warrior.feel().isEmpty()) {
+      warrior.walk();
     } else {
-      if (warrior.feel(direction).isUnit()) {
-        if (warrior.feel(direction).getUnit().isBound()) {
-          warrior.rescue(direction);
+      if (warrior.feel().isUnit()) {
+        if (warrior.feel().getUnit().isBound()) {
+          warrior.rescue();
         } else {
-          warrior.attack(direction);
+          warrior.attack();
         }
-      } else if (warrior.feel(direction).isWall()) {
-        this.behindClear = true;
+      } else if (warrior.feel().isWall()) {
+        warrior.pivot();
+      } else if (warrior.feel().isStairs()) {
         warrior.walk();
-      } else if (warrior.feel(direction).isStairs()) {
-        warrior.walk(direction);
       }
     }
   }
