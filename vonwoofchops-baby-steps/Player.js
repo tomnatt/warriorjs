@@ -13,6 +13,8 @@ class Player {
   adventure(warrior) {
     // If injured but not taking damage, heal
     // If wall in front, pivot
+    // Shoot enemy behind
+    // If captive behind, go rescue
     // If nearest thing is an enemy, shoot
     // If next to a captive, rescue
     // Else move forward
@@ -25,6 +27,13 @@ class Player {
 
     } else if (this.enemyBehind(warrior)) {
       warrior.shoot("backward");
+
+    } else if (this.captiveBehind(warrior)) {
+      if (warrior.feel("backward").isUnit() && warrior.feel("backward").getUnit().isBound()) {
+        warrior.rescue("backward");
+      } else {
+        warrior.walk("backward")
+      }
 
     } else if (this.enemyNearest(warrior)) {
       warrior.shoot();
@@ -40,6 +49,11 @@ class Player {
   enemyBehind(warrior) {
     const spaceWithUnit = warrior.look("backward").find(space => space.isUnit());
     return spaceWithUnit && spaceWithUnit.getUnit().isEnemy();
+  }
+
+  captiveBehind(warrior) {
+    const spaceWithUnit = warrior.look("backward").find(space => space.isUnit());
+    return spaceWithUnit && spaceWithUnit.getUnit().isBound();
   }
 
   enemyNearest(warrior) {
